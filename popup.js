@@ -1,4 +1,5 @@
-document.getElementById("extractBtn").addEventListener("click", async () => {
+document.getElementById("extractBtn")
+.addEventListener("click", async () => {
 
     const [tab] = await chrome.tabs.query({
         active: true,
@@ -8,9 +9,8 @@ document.getElementById("extractBtn").addEventListener("click", async () => {
     chrome.tabs.sendMessage(
         tab.id,
         { action: "extractChat" },
-        (response) => {
+        async (response) => {
 
-            // check connection errors
             if (chrome.runtime.lastError) {
                 console.error(
                     "Runtime Error:",
@@ -19,13 +19,12 @@ document.getElementById("extractBtn").addEventListener("click", async () => {
                 return;
             }
 
-            // check if response exists
             if (!response) {
                 console.error("No response received");
                 return;
             }
 
-            
+            // format conversation
             const formatted = response.chat
                 .map(msg =>
                     `${msg.role.toUpperCase()}: ${msg.text}`
@@ -33,12 +32,16 @@ document.getElementById("extractBtn").addEventListener("click", async () => {
                 .join("\n\n");
 
             console.log(formatted);
-            chrome.tabs.create({url: "https://gemini.google.com"});
 
+            // save into chrome storage
+            chrome.storage.local.set({
+                handoffContext: formatted
+            });
 
-
-
-
+            // open Gemini
+            chrome.tabs.create({
+                url: "https://gemini.google.com"
+            });
 
         }
     );

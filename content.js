@@ -2,6 +2,7 @@ console.log("CONTENT SCRIPT LOADED");
 
 chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
 
+    // CLAUDE EXTRACTION
     if (request.action === "extractChat") {
 
         const chat = [];
@@ -48,3 +49,19 @@ chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
     }
 
 });
+
+
+// GEMINI PAGE LOGIC
+if (window.location.hostname.includes("gemini.google.com")) {
+
+    chrome.storage.local.get(
+        ["handoffContext"],
+        (data) => {
+
+            console.log("TRANSFERRED CONTEXT:");
+            console.log(data.handoffContext);
+
+        }
+    );
+
+}
