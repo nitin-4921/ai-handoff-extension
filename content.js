@@ -58,8 +58,33 @@ if (window.location.hostname.includes("gemini.google.com")) {
         ["handoffContext"],
         (data) => {
 
-            console.log("TRANSFERRED CONTEXT:");
-            console.log(data.handoffContext);
+            const context = data.handoffContext;
+
+            if (!context) return;
+
+            const waitForEditor = setInterval(() => {
+
+                const editor = document.querySelector(
+                    '[contenteditable="true"]'
+                );
+
+                if (!editor) return;
+
+                clearInterval(waitForEditor);
+
+                editor.innerText =`Continue this conversation from the transferred context:${context}`;
+
+                editor.dispatchEvent(
+                    new InputEvent("input", {
+                        bubbles: true
+                    })
+                );
+
+                editor.focus();
+
+                console.log("Context pasted successfully");
+
+            }, 500);
 
         }
     );
